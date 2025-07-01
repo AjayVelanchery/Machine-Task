@@ -1,4 +1,6 @@
+import javax.print.attribute.standard.PrinterName;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +41,7 @@ public class Database {
 
         BonusCalulater bonusCalulater=(salary)->(salary*0.10);
 
-        employees.forEach(emp-> System.out.println(emp.getName()+ " "+emp.getSalary()));
+        employees.forEach(emp-> System.out.println(emp.getName()+ " "+bonusCalulater.calculate(emp.getSalary())));
 //        Filter employees who joined after 2020
         employees.stream().filter(emp->emp.getJoiningDate().isAfter(LocalDate.of(2020,2,2)))
                 .forEach(emp-> System.out.println(emp.getName()));
@@ -55,5 +57,35 @@ public class Database {
         long Salaryhigher=employees.stream().filter(emp->emp.getSalary()>50000).count();
 
         System.out.println(Salaryhigher);
+
+
+        //calculate year of service
+        employees.forEach(emp->{int years= Period.between(emp.getJoiningDate(),LocalDate.now()).getYears();
+            System.out.println(emp.getName()+" "+years);
+        });
+
+
+//        4. Use Optional to print department
+
+     employees.stream()
+             .map(emp->emp.getDepartment().orElse("Not Assigned"))
+             .forEach(System.out::println);
+
+
+//        5. Runnable thread to print names with delay
+Runnable printName=()->{
+    for(Employee emp:employees){
+        try {
+            Thread.sleep(1000);
+            System.out.println(emp.getName());
+
+        }
+      catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+          System.out.println("Thread was interrupted");
+      }}};
+    Thread thread=new Thread(printName);
+    thread.start();
+
     }}
 
